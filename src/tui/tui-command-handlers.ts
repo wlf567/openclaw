@@ -275,7 +275,7 @@ export function createCommandHandlers(context: CommandHandlerContext) {
         agentId: state.currentAgentId,
       });
       const items = result.sessions.map((session) => {
-        const title = session.derivedTitle ?? session.displayName;
+        const title = session.derivedTitle ?? session.displayName ?? session.label;
         const formattedKey = formatSessionKey(session.key);
         // Avoid redundant "title (key)" when title matches key
         const label = title && title !== formattedKey ? `${title} (${formattedKey})` : formattedKey;

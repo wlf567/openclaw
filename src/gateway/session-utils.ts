@@ -251,6 +251,9 @@ export function deriveSessionTitle(
   if (normalizeOptionalString(entry.subject)) {
     return normalizeOptionalString(entry.subject);
   }
+  if (normalizeOptionalString(entry.label)) {
+    return normalizeOptionalString(entry.label);
+  }
 
   if (firstUserMessage?.trim()) {
     const normalized = firstUserMessage.replace(/\s+/g, " ").trim();
