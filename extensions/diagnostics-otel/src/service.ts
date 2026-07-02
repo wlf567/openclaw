@@ -170,6 +170,21 @@ function resolveOtelUrl(endpoint: string | undefined, path: string): string | un
   }
   const endpointWithoutQueryOrFragment = endpoint.split(/[?#]/, 1)[0] ?? endpoint;
   if (/\/v1\/(?:traces|metrics|logs)$/i.test(endpointWithoutQueryOrFragment)) {
+    const qualifiedPath = endpointWithoutQueryOrFragment.match(
+      /\/v1\/(?:traces|metrics|logs)$/i,
+    )![0];
+    // When the shared endpoint is already signal-qualified, replace the trailing
+    // signal segment with the requested signal path so metrics/logs aren't POSTed
+    // to the traces endpoint (or vice versa). Signal-specific endpoint overrides
+    // (tracesEndpoint / metricsEndpoint / logsEndpoint) are resolved earlier and
+    // are never passed through this fallback.
+    if (qualifiedPath.toLowerCase() !== `/${path}`.toLowerCase()) {
+      const prefix = endpoint.slice(
+        0,
+        endpointWithoutQueryOrFragment.length - qualifiedPath.length,
+      );
+      return `${prefix}/${path}${endpoint.slice(endpointWithoutQueryOrFragment.length)}`;
+    }
     return endpoint;
   }
   if (/[?#]/u.test(endpoint)) {
